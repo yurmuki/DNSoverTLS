@@ -14,7 +14,7 @@ These days nearly all DNS queries are sent unencrypted, which makes them vulnera
 
 5. Number of connections: To minimize state on DNS servers and connection startup time, clients SHOULD minimize creation of new TCP connections. Use of a local DNS forwarder allows a single active DNS-over-TLS connection allows a single active TCP connection for DNS per client computer.
 
-## Security Conciderations:
+## Security concerns for this kind of service:
 There are a number of residual risks that may impact this goal.
 
 1. There are known attacks on TLS, such as person-in-the-middle and protocol downgrade. These are general attacks on TLS and not specific to DNS-over-TLS; please refer to the TLS RFCs for discussion of these security issues.
@@ -22,6 +22,14 @@ There are a number of residual risks that may impact this goal.
 2. Any protocol interactions prior to the TLS handshake are performed in the clear and can be modified by a man-in-the-middle attacker. For this reason, clients MAY discard cached information about server capabilities advertised prior to the start of the TLS handshake.
 
 3. As with other uses of STARTTLS-upgrade to TLS, the mechanism specified here is susceptible to downgrade attacks, where a person-in-the-middle prevents a successful TLS upgrade. Keeping track of servers known to support TLS (i.e., "pinning") enables clients to detect downgrade attacks. For servers with no connection history, clients may choose to refuse non-TLS DNS, or they may continue without TLS, depending on their privacy requirements.
+
+## Microservice Architecture Consideration:
+We have to ensure that the application server has to be linked with our DNS server so that it can resolve its queries. To acheive this, we have to link our application server as below:
+
+`docker run -t -d --name application-container-name --link=dnsovertls application-image-name`
+
+## Other recommendations for the project:
+We should consider DNS caching to optimize DNS queries and DNS response time. 
 
 **Building Docker Image**
 `docker build -t dnsovertls:proxy .`
